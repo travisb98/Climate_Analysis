@@ -95,18 +95,43 @@ def temperature():
     return jsonify(temp_page_result)
 
 
+@app.route("/api/v1.0/<start>")
+def start_page(start):
+    print("sucessfully reach the start page")
+    start_date=str(start)
+
+    spr_max=engine.execute(f'SELECT MAX(measurement.tobs) FROM measurement WHERE measurement.date>{start_date}').fetchall()[0][0]
+    spr_min=engine.execute(f'SELECT MIN(measurement.tobs) FROM measurement WHERE measurement.date>{start_date}').fetchall()[0][0]
+    spr_avg=round(engine.execute(f'SELECT AVG(measurement.tobs) FROM measurement WHERE measurement.date>{start_date}').fetchall()[0][0],2)
+
+    start_page_results_dict = {
+        "Average":spr_avg,
+        "Max":spr_max,
+        "Min":spr_min
+    }
+
+    return jsonify(start_page_results_dict)
+
+@app.route("/api/v1.0/<start>/<end>")
+def startend_page(start,end):
+    print("sucessfully reach the start_end date page")
+    start_date=str(start)
+    end_date=str(end)
+    r_max=engine.execute(f'SELECT MAX(measurement.tobs) FROM measurement WHERE measurement.date BETWEEN {start_date} AND {end_date}').fetchall()[0][0]
+    r_min=engine.execute(f'SELECT MIN(measurement.tobs) FROM measurement WHERE measurement.date>{start_date} AND measurement.date<{end_date}').fetchall()[0][0]
+    r_avg=engine.execute(f'SELECT AVG(measurement.tobs) FROM measurement WHERE measurement.date>{start_date} AND measurement.date<{end_date}').fetchall()[0][0]
 
 
+    null_msg="if you receive null results, make sure your dates are in the 'yyyy-mm-dd' format surrounded by quotes in the url"
 
-# @app.route("/api/v1.0/<start>")
-# def start_page():
-#     print("sucessfully reach the start page")
-#     return "Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start date\When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.\When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive."
-
-# @app.route("/api/v1.0/<start>/<end>")
-# def startend_page():
-#     print("sucessfully reach the start_end date page")
-#     return "Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.\When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.\When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive."
+    start_end_results_dict = {
+        "note":null_msg,
+        "Average":r_avg,
+        "Max":r_max,
+        "Min":r_min
+    }
+    
+    return jsonify(start_end_results_dict)
 
 
 
