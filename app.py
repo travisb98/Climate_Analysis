@@ -36,62 +36,54 @@ session=Session(engine)
 ###create the app
 app = Flask(__name__)
 
-### gives the date range to use for a given station number in the "first_date,last_date" format
-def first_last_date(station_num):
-    last_date = dt.datetime.strptime(session.query(mt.date,mt.tobs).filter(mt.station==station_num).order_by(mt.date.desc()).all()[0][0],'%Y-%m-%d')
-    first_date = last_date - dt.timedelta(days=365)
-    return(first_date,last_date)
 
-
-### to be used with the home page
-route_list =[
-    "/api/v1.0/precipitation",
-    "/api/v1.0/stations",
-    "/api/v1.0/tobs",
-    "/api/v1.0/<start>",
-    "/api/v1.0/<start>/<end>"
-]
 #### defining the homepage
 @app.route("/")
 def home():
     print("sucessfully reached home page")
-    return jsonify(route_list)
+
+    route_dict={
+    "Lists the precipitation by date":"/api/v1.0/precipitation",
+    "List station names and their ID's":"/api/v1.0/stations",
+    "Lists the last year of temperature data for the most active station":"/api/v1.0/tobs",
+    "Returns the Average, Minimum and Maximum Temperature for all dates including and beyond the start date ":"/api/v1.0/<start>",
+    "Returns the Average, Minimum and Maximum Temperature for the date range":"/api/v1.0/<start>/<end>",
+    }
+
+    return jsonify(route_dict)
 
 
-
-
-#### query to get the date and preciptation for 
-prec=dict(engine.execute('SELECT date,prcp FROM measurement').fetchall())
-######## defining the precipitation page
-#### this page has a button  to select "raw" or "parsed", not sure why this is
+#### defining the precipitation page
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     print("sucessfully reach the precipitation page")
+    #### query to get the date and preciptation for 
+    prec=dict(engine.execute('SELECT date,prcp FROM measurement').fetchall())
     return jsonify(prec)
 
 
-
-#### gets the station id and name  for the stations page
-station=dict(engine.execute("SELECT station,name FROM station").fetchall())
 #### definig the stations page
 @app.route("/api/v1.0/stations")
 def stations():
     print("sucessfully reached the stations page")
+    #### gets the station id and name  for the stations page
+    station=dict(engine.execute("SELECT station,name FROM station").fetchall())
+
     return jsonify(station)
-
-
-### define the station id for the top 
-top_station_id = "USC00519281"
-
-### find the first and last date we'll be using for the temperature page query
-top_first_date, top_last_date = first_last_date(top_station_id)
-
-### query to get the last year of data for the top station
-temp_page_result = dict(session.query(mt.date,mt.tobs).filter(mt.station==top_station_id,mt.date>top_first_date).all())
 
 @app.route("/api/v1.0/tobs")
 def temperature():
     print("sucessfully reached the temperature page")
+    ### define the station id for the top 
+    top_station_id = "USC00519281"
+
+    ### gives the date range to use for a given station number in the "first_date,last_date" format
+    top_last_date = dt.datetime.strptime(session.query(mt.date,mt.tobs).filter(mt.station==top_station_id).order_by(mt.date.desc()).all()[0][0],'%Y-%m-%d')
+    top_first_date = top_last_date - dt.timedelta(days=365)
+
+    ### query to get the last year of data for the top station
+    temp_page_result = dict(session.query(mt.date,mt.tobs).filter(mt.station==top_station_id,mt.date>top_first_date).all())
+    session.close()
     return jsonify(temp_page_result)
 
 
@@ -115,25 +107,34 @@ def start_page(start):
 @app.route("/api/v1.0/<start>/<end>")
 def startend_page(start,end):
     print("sucessfully reach the start_end date page")
-    start_date=str(start)
-    end_date=str(end)
-    r_max=engine.execute(f'SELECT MAX(measurement.tobs) FROM measurement WHERE measurement.date BETWEEN {start_date} AND {end_date}').fetchall()[0][0]
-    r_min=engine.execute(f'SELECT MIN(measurement.tobs) FROM measurement WHERE measurement.date>{start_date} AND measurement.date<{end_date}').fetchall()[0][0]
-    r_avg=engine.execute(f'SELECT AVG(measurement.tobs) FROM measurement WHERE measurement.date>{start_date} AND measurement.date<{end_date}').fetchall()[0][0]
+    start_date=start
+    end_date=end
+
+    all_dates=engine.execute('SELECT measurement.date FROM measurement').fetchall()
+    max_date_available=engine.execute('SELECT MAX(measurement.date) FROM measurement').fetchall()[0][0]
+    min_date_available=engine.execute('SELECT MIN(measurement.date) FROM measurement').fetchall()[0][0]
+ 
+    #clean up the all_dates list
+    all_dates= [x[0] for x in all_dates]
 
 
-    null_msg="if you receive null results, make sure your dates are in the 'yyyy-mm-dd' format surrounded by quotes in the url"
-
-    start_end_results_dict = {
-        "note":null_msg,
+    ### returns the results if the dates entered are within data
+    if dt.datetime.strptime(start,'%Y-%m-%d') and dt.datetime.strptime(end,'%Y-%m-%d') in [dt.datetime.strptime(str(x),'%Y-%m-%d') for x in all_dates]:
+        r_max=session.query(mt.tobs).filter(mt.date>=start_date,mt.date<=end_date).order_by(mt.tobs.desc()).first()[0]
+        r_min=session.query(mt.tobs).filter(mt.date>=start_date,mt.date<=end_date).order_by(mt.tobs.asc()).first()[0]
+        r_avg=round(session.query(func.avg(mt.tobs)).filter(mt.date>=start_date,mt.date<=end_date).order_by(mt.tobs.desc()).all()[0][0],2)
+        session.close()
+        start_end_results_dict = {
         "Average":r_avg,
         "Max":r_max,
         "Min":r_min
-    }
-    
-    return jsonify(start_end_results_dict)
+        }  
 
+        return jsonify(start_end_results_dict)
 
+    else:
+        ### prints out the available date range if used enters date beyond data
+        return f'your range must be between {min_date_available} and {max_date_available}'
 
 
 if __name__== "__main__":
