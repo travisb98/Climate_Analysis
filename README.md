@@ -1,158 +1,209 @@
-# SQLAlchemy Homework - Surfs Up!
-
-### Before You Begin
-
-1. Create a new repository for this project called `sqlalchemy-challenge`. **Do not add this homework to an existing repository**.
-
-2. Clone the new repository to your computer.
-
-3. Add your Jupyter notebook and `app.py` to this folder. These will be the main scripts to run for analysis.
-
-4. Push the above changes to GitHub or GitLab.
-
-![surfs-up.png](Images/surfs-up.png)
-
-Congratulations! You've decided to treat yourself to a long holiday vacation in Honolulu, Hawaii! To help with your trip planning, you need to do some climate analysis on the area. The following outlines what you need to do.
-
-## Step 1 - Climate Analysis and Exploration
-
-To begin, use Python and SQLAlchemy to do basic climate analysis and data exploration of your climate database. All of the following analysis should be completed using SQLAlchemy ORM queries, Pandas, and Matplotlib.
-
-* Use the provided [starter notebook](climate_starter.ipynb) and [hawaii.sqlite](Resources/hawaii.sqlite) files to complete your climate analysis and data exploration.
-
-* Choose a start date and end date for your trip. Make sure that your vacation range is approximately 3-15 days total.
-
-* Use SQLAlchemy `create_engine` to connect to your sqlite database.
-
-* Use SQLAlchemy `automap_base()` to reflect your tables into classes and save a reference to those classes called `Station` and `Measurement`.
-
-### Precipitation Analysis
-
-* Design a query to retrieve the last 12 months of precipitation data.
-
-* Select only the `date` and `prcp` values.
-
-* Load the query results into a Pandas DataFrame and set the index to the date column.
-
-* Sort the DataFrame values by `date`.
-
-* Plot the results using the DataFrame `plot` method.
-
-  ![precipitation](Images/precipitation.png)
-
-* Use Pandas to print the summary statistics for the precipitation data.
-
-### Station Analysis
-
-* Design a query to calculate the total number of stations.
-
-* Design a query to find the most active stations.
-
-  * List the stations and observation counts in descending order.
-
-  * Which station has the highest number of observations?
-
-  * Hint: You will need to use a function such as `func.min`, `func.max`, `func.avg`, and `func.count` in your queries.
-
-* Design a query to retrieve the last 12 months of temperature observation data (TOBS).
-
-  * Filter by the station with the highest number of observations.
-
-  * Plot the results as a histogram with `bins=12`.
-
-    ![station-histogram](Images/station-histogram.png)
-
-- - -
-
-## Step 2 - Climate App
-
-Now that you have completed your initial analysis, design a Flask API based on the queries that you have just developed.
-
-* Use Flask to create your routes.
-
-### Routes
-
-* `/`
-
-  * Home page.
-
-  * List all routes that are available.
-
-* `/api/v1.0/precipitation`
-
-  * Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
-
-  * Return the JSON representation of your dictionary.
-
-* `/api/v1.0/stations`
-
-  * Return a JSON list of stations from the dataset.
-
-* `/api/v1.0/tobs`
-  * Query the dates and temperature observations of the most active station for the last year of data.
-  
-  * Return a JSON list of temperature observations (TOBS) for the previous year.
-
-* `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
-
-  * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
-
-  * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
-
-  * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
-
-## Hints
-
-* You will need to join the station and measurement tables for some of the queries.
-
-* Use Flask `jsonify` to convert your API data into a valid JSON response object.
-
-- - -
-
-## Bonus: Other Recommended Analyses
-
-* The following are optional challenge queries. These are highly recommended to attempt, but not required for the homework.
-
-### Temperature Analysis I
-
-* Hawaii is reputed to enjoy mild weather all year. Is there a meaningful difference between the temperature in, for example, June and December?
-
-* You may either use SQLAlchemy or pandas's `read_csv()` to perform this portion.
-
-* Identify the average temperature in June at all stations across all available years in the dataset. Do the same for December temperature.
-
-* Use the t-test to determine whether the difference in the means, if any, is statistically significant. Will you use a paired t-test, or an unpaired t-test? Why?
-
-### Temperature Analysis II
-
-* The starter notebook contains a function called `calc_temps` that will accept a start date and end date in the format `%Y-%m-%d`. The function will return the minimum, average, and maximum temperatures for that range of dates.
-
-* Use the `calc_temps` function to calculate the min, avg, and max temperatures for your trip using the matching dates from the previous year (i.e., use "2017-01-01" if your trip start date was "2018-01-01").
-
-* Plot the min, avg, and max temperature from your previous query as a bar chart.
-
-  * Use the average temperature as the bar height.
-
-  * Use the peak-to-peak (TMAX-TMIN) value as the y error bar (YERR).
-
-    ![temperature](Images/temperature.png)
-
-### Daily Rainfall Average
-
-* Calculate the rainfall per weather station using the previous year's matching dates.
-
-* Calculate the daily normals. Normals are the averages for the min, avg, and max temperatures.
-
-* You are provided with a function called `daily_normals` that will calculate the daily normals for a specific date. This date string will be in the format `%m-%d`. Be sure to use all historic TOBS that match that date string.
-
-* Create a list of dates for your trip in the format `%m-%d`. Use the `daily_normals` function to calculate the normals for each date string and append the results to a list.
-
-* Load the list of daily normals into a Pandas DataFrame and set the index equal to the date.
-
-* Use Pandas to plot an area plot (`stacked=False`) for the daily normals.
-
-  ![daily-normals](Images/daily-normals.png)
-
-### Copyright
-
-Trilogy Education Services © 2020. All Rights Reserved.
+# Climate Analysis with SQL and Python
+
+
+- ## Overview
+  - define starting point and end goal
+  - link to deployed github page if github page is deployed
+  - The objective of the project was to turn 2 CSV files into an SQL database using the Python Library SQLAlchemy. These CSV files contained metadata about specific weather stations and weather observation data from these stations. Once created, this SQL database was analyzed to create visualizations about precipitation data and station specific data. Next, an API with multiple routes was created. This API returns precipitation data, temperature data, station metadata, and aggregate temperature data for a specific data range.
+
+- ## Programs, Languages and tools
+    - SQL
+    - Python
+    - Python Libraries:
+        - Matplotlib
+        - Numpy
+        - Pandas
+        - Datetime
+        - SQL Alchemy
+        - Flask
+
+- ## File overview
+  - ### app.py
+    ##### *description of file*
+  - ### climate.ipynb
+    ##### *description of file*
+  - ### hawaii_measurements.csv
+    ##### *description of file*
+  - ### hawaii_stations.csv
+    ##### *description of file*
+  - ### hawaii.sqlite
+    ##### *description of file*
+
+
+- ## Creating Database
+    1. Use SQLAlchemy's create_engine to connect to database
+    ```python
+        engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+    ```
+    2. Use automaping to reflect tables into classes and save as variables called Station and Measurement
+    ```python
+        Base = automap_base()
+        Base.prepare(engine,reflect=True)
+    ```
+
+
+- ## Analysis and Visualizations
+    1. Designing an query that returns 12 months of precipitation data and plot
+        - Define the start and end dates
+            ```python
+            ### getting the end date
+            max_date = session.query(func.max(mt.date)).first()[0]
+            ### formatting to date time format
+            max_date = dt.datetime.strptime(max_date,'%Y-%m-%d')
+            # Calculate the date 1 year ago from the last data point in the database
+            year_ago =(max_date - dt.timedelta(weeks=52)).replace(day=max_date.day)
+            ##### converting it into a format that we're able to query with
+            year_ago = f'{year_ago.year}-{year_ago.month:02d}-{year_ago.day:02d}'
+            ```
+        - Use SQL Alchemy's ORM tool session to perform query on database
+            ```python
+            # Perform a query to retrieve the data and precipitation amounts
+            annual_pre_list = session.query(mt.date,mt.prcp).filter(mt.date>year_ago).all()
+            ```
+        - Plot data using matplotlib
+        
+            ![Rain over Time](Images/rainChart.png)
+    2. Station Analysis
+        - Create a query to calculate the total number of stations
+            ```python
+            station_count = engine.execute("SELECT COUNT(station.id) FROM station").fetchall()[0][0]
+            ```
+        - Design a query with the max temperature, minimum temperature, average temperature, and count of observations for each station
+            ```python
+                station_activity_list = engine.execute("SELECT DISTINCT station, (SELECT COUNT(measurement.id) FROM measurement WHERE measurement.station=station.station) as meas_count,(SELECT MAX(measurement.tobs) FROM measurement WHERE measurement.station=station.station) as max_temp,(SELECT MIN(measurement.tobs)FROM measurement WHERE measurement.station=station.station) as min_temp,ROUND((SELECT AVG(measurement.tobs)FROM measurement WHERE measurement.station=station.station),2) as avg_temp, name FROM station ORDER BY meas_count DESC").fetchall()
+            ```
+        - Use a query to retrieve the last 12 months of temperature observation data for the station with the most observations
+            - Use the top station ID and start data to query the temperature data
+            ```python
+            top_station_temps_df=pd.DataFrame(session.query(mt.date,mt.tobs).filter(mt.station==top_station,mt.date>top_first_date).all())
+            ```
+            - Plot the results in a histogram
+
+                ![Top Station Temperature Readings](Images/stationChart.png)
+
+- ## API Creation
+    1. Creating the flask application
+    ```python
+        app = Flask(__name__)
+    ```
+    2. Create each endpoint
+        - Home Page
+            ```python
+                @app.route("/")
+                def home():
+                    route_dict={
+                    "Lists the precipitation by date":"/api/v1.0/precipitation",
+                    "List station names and their ID's":"/api/v1.0/stations",
+                    "Lists the last year of temperature data for the most active station":"/api/v1.0/tobs",
+                    "Returns the Average, Minimum and Maximum Temperature for all dates including and beyond the start date ":"/api/v1.0/<start>",
+                    "Returns the Average, Minimum and Maximum Temperature for the date range":"/api/v1.0/<start>/<end>",
+                    }
+
+                    return jsonify(route_dict)
+            ```
+        - Precipitation Page
+            ```python
+            @app.route("/api/v1.0/precipitation")
+            def precipitation():
+                print("sucessfully reach the precipitation page")
+                #### query to get the date and preciptation
+                prec=dict(engine.execute('SELECT date,prcp FROM measurement').fetchall())
+                return jsonify(prec)
+            ```
+        - Stations Page
+            ```python
+            @app.route("/api/v1.0/stations")
+            def stations():
+                print("sucessfully reached the stations page")
+                #### gets the station id and name  for the stations page
+                station=dict(engine.execute("SELECT station,name FROM station").fetchall())
+                return jsonify(station)
+            ```
+        - Temperature Page
+            ```python
+            @app.route("/api/v1.0/tobs")
+            def temperature():
+                print("sucessfully reached the temperature page")
+                ### define the station id for the top 
+                top_station_id = "USC00519281"
+
+                ### gives the date range to use for a given station number in the "first_date,last_date" format
+                top_last_date = dt.datetime.strptime(session.query(mt.date,mt.tobs).filter(mt.station==top_station_id).order_by(mt.date.desc()).all()[0][0],'%Y-%m-%d')
+                top_first_date = top_last_date - dt.timedelta(days=365)
+
+                ### query to get the last year of data for the top station
+                temp_page_result = dict(session.query(mt.date,mt.tobs).filter(mt.station==top_station_id,mt.date>top_first_date).all())
+                session.close()
+                return jsonify(temp_page_result)
+            ```
+        - Start Date Page
+            ```python
+            @app.route("/api/v1.0/<start>")
+            def start_page(start):
+                print("sucessfully reach the start page")
+                start_date=str(start)
+
+                spr_max=engine.execute(f'SELECT MAX(measurement.tobs) FROM measurement WHERE measurement.date>{start_date}').fetchall()[0][0]
+                spr_min=engine.execute(f'SELECT MIN(measurement.tobs) FROM measurement WHERE measurement.date>{start_date}').fetchall()[0][0]
+                spr_avg=round(engine.execute(f'SELECT AVG(measurement.tobs) FROM measurement WHERE measurement.date>{start_date}').fetchall()[0][0],2)
+
+                start_page_results_dict = {
+                    "Average":spr_avg,
+                    "Max":spr_max,
+                    "Min":spr_min
+                }
+
+                return jsonify(start_page_results_dict)
+            ```
+        - Date Range Page
+            ```python
+                @app.route("/api/v1.0/<start>/<end>")
+                def startend_page(start,end):
+                    print("sucessfully reach the start_end date page")
+                    start_date=start
+                    end_date=end
+
+                    all_dates=engine.execute('SELECT measurement.date FROM measurement').fetchall()
+                    max_date_available=engine.execute('SELECT MAX(measurement.date) FROM measurement').fetchall()[0][0]
+                    min_date_available=engine.execute('SELECT MIN(measurement.date) FROM measurement').fetchall()[0][0]
+                
+                    #clean up the all_dates list
+                    all_dates= [x[0] for x in all_dates]
+
+
+                    ### returns the results if the dates entered are within data
+                    if dt.datetime.strptime(start,'%Y-%m-%d') and dt.datetime.strptime(end,'%Y-%m-%d') in [dt.datetime.strptime(str(x),'%Y-%m-%d') for x in all_dates]:
+                        r_max=session.query(mt.tobs).filter(mt.date>=start_date,mt.date<=end_date).order_by(mt.tobs.desc()).first()[0]
+                        r_min=session.query(mt.tobs).filter(mt.date>=start_date,mt.date<=end_date).order_by(mt.tobs.asc()).first()[0]
+                        r_avg=round(session.query(func.avg(mt.tobs)).filter(mt.date>=start_date,mt.date<=end_date).order_by(mt.tobs.desc()).all()[0][0],2)
+                        session.close()
+                        start_end_results_dict = {
+                        "Average":r_avg,
+                        "Max":r_max,
+                        "Min":r_min
+                        }  
+
+                        return jsonify(start_end_results_dict)
+
+                    else:
+                        ### prints out the available date range if used enters date beyond data
+                        return f'your range must be between {min_date_available} and {max_date_available}'
+
+            ```
+
+
+
+- ## Instructions on how to use the API
+    - Run the app.py file
+    - Select the link that comes up in the terminal once the file runs. This link will bring you to the home page and is typically http://127.0.0.1:5000
+    - The routes will be listed on the home page. Add any of these routes to the base url to access each endpoint
+
+        - Lists the precipitation by date:"/api/v1.0/precipitation"
+
+        - Lists station names and their ID's:"/api/v1.0/stations"
+
+        - Lists the last year of temperature data for the most active station:"/api/v1.0/tobs"
+
+        - Returns the Average, Minimum and Maximum Temperature for all dates including and beyond the start date :"/api/v1.0/<start>"
+
+        - Returns the Average, Minimum and Maximum Temperature for the date range:"/api/v1.0/<start>/<end>"

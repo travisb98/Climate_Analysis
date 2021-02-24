@@ -8,11 +8,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
 
-############## review class notes on session.close to make sure this is set up right
 
 
-
-## set up engine and connection, not sure if connection is needed
+## set up engine and connection
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 # conn = engine.connect()
 
@@ -21,8 +19,7 @@ Base = automap_base()
 # reflect the tables
 Base.prepare(engine,reflect=True)
 
-##### ---- not sure if I need this needed
-# Base.metadata.create_all(conn)
+
 
 
 # Save references to each table
@@ -44,7 +41,7 @@ def home():
 
     route_dict={
     "Lists the precipitation by date":"/api/v1.0/precipitation",
-    "List station names and their ID's":"/api/v1.0/stations",
+    "Lists station names and their ID's":"/api/v1.0/stations",
     "Lists the last year of temperature data for the most active station":"/api/v1.0/tobs",
     "Returns the Average, Minimum and Maximum Temperature for all dates including and beyond the start date ":"/api/v1.0/<start>",
     "Returns the Average, Minimum and Maximum Temperature for the date range":"/api/v1.0/<start>/<end>",
@@ -57,7 +54,7 @@ def home():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     print("sucessfully reach the precipitation page")
-    #### query to get the date and preciptation for 
+    #### query to get the date and preciptation
     prec=dict(engine.execute('SELECT date,prcp FROM measurement').fetchall())
     return jsonify(prec)
 
@@ -68,7 +65,6 @@ def stations():
     print("sucessfully reached the stations page")
     #### gets the station id and name  for the stations page
     station=dict(engine.execute("SELECT station,name FROM station").fetchall())
-
     return jsonify(station)
 
 @app.route("/api/v1.0/tobs")
