@@ -2,8 +2,6 @@
 
 
 - ## Overview
-  - define starting point and end goal
-  - link to deployed github page if github page is deployed
   - The objective of the project was to turn 2 CSV files into an SQL database using the Python Library SQLAlchemy. These CSV files contained metadata about specific weather stations and weather observation data from these stations. Once created, this SQL database was analyzed to create visualizations about precipitation data and station specific data. Next, an API with multiple routes was created. This API returns precipitation data, temperature data, station metadata, and aggregate temperature data for a specific data range.
 
 - ## Programs, Languages and tools
